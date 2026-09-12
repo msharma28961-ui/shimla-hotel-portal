@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Wildflower Estate | 10 Luxury Residences Shimla</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+  <style>
+    :root {
+      --gold: #c5a880;
+      --gold-dark: #9a7b56;
+      --dark-bg: #0b0f15;
+      --card-bg: #141a23;
+      --border-subtle: rgba(197, 168, 128, 0.25);
+      --text-pure: #ffffff;
+      --text-muted: #9ba1a6;
+      --radius: 12px;
+      --success: #22c55e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: 'Montserrat', sans-serif; }
+    body { background-color: var(--dark-bg); color: var(--text-pure); overflow-x: hidden; padding-bottom: 110px; }
+    .top-header { position: sticky; top: 0; z-index: 100; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; background: rgba(11,15,21,.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-subtle); }
+    .brand-group h1 { font-family: 'Cormorant Garamond',serif; font-size: 1.3rem; letter-spacing: .15em; text-transform: uppercase; color: #fff; }
+    .brand-group span { display: block; font-size: .58rem; letter-spacing: .25em; text-transform: uppercase; color: var(--gold); }
+    .btn-admin { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 5px 10px; border-radius: 6px; font-size: .68rem; text-transform: uppercase; cursor: pointer; }
+    .main-wrapper { padding: 16px; max-width: 520px; margin: 0 auto; }
+    .date-filter-bar { background: #141a23; border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,.5); }
+    .date-display-info h4 { font-size: .85rem; color: #fff; }
+    .date-display-info p { font-size: .72rem; color: var(--gold); margin-top: 2px; }
+    .btn-change-date { background: var(--gold); color: #0b0f15; border: none; padding: 8px 14px; border-radius: 6px; font-size: .75rem; font-weight: 700; cursor: pointer; }
+    .room-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,.08); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; transition: border-color .2s ease; }
+    .room-card.selected { border-color: var(--gold); }
+    .room-media { position: relative; height: 220px; }
+    .room-media img { width: 100%; height: 100%; object-fit: cover; }
+    .room-pill-badge { position: absolute; top: 10px; left: 10px; background: rgba(11,15,21,.85); border: 1px solid var(--border-subtle); padding: 4px 8px; border-radius: 4px; font-size: .68rem; color: var(--gold); }
+    .photo-index-tag { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,.7); font-size: .65rem; padding: 3px 6px; border-radius: 4px; }
+    .thumb-scroll { display: flex; gap: 6px; padding: 8px 10px; background: #0f141c; overflow-x: auto; }
+    .thumb-scroll img { width: 50px; height: 38px; object-fit: cover; border-radius: 4px; border: 1px solid transparent; opacity: .55; cursor: pointer; }
+    .thumb-scroll img.active { opacity: 1; border-color: var(--gold); }
+    .room-content { padding: 14px 16px; }
+    .room-title-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; gap: 8px; }
+    .room-title-row h3 { font-family: 'Cormorant Garamond',serif; font-size: 1.35rem; color: #fff; }
+    .room-rate-tag { font-size: 1.05rem; font-weight: 700; color: var(--gold); white-space: nowrap; }
+    .room-rate-tag small { font-size: .68rem; color: var(--text-muted); font-weight: 400; }
+    .room-desc { font-size: .72rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
+    .btn-select-room { width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: 8px; font-size: .8rem; font-weight: 600; cursor: pointer; }
+    .room-card.selected .btn-select-room { background: var(--gold); color: #0b0f15; font-weight: 700; }
+    .floating-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11,15,21,.96); backdrop-filter: blur(12px); border-top: 1px solid var(--border-subtle); padding: 12px 18px 20px; z-index: 99; }
+    .bar-inner { max-width: 520px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+    .total-meta h5 { font-size: .65rem; color: var(--text-muted); text-transform: uppercase; }
+    .total-meta .total-val { font-size: 1.35rem; font-weight: 700; color: var(--gold); }
+    .btn-reserve-final { flex: 1; background: linear-gradient(135deg,#c5a880 0%,#9a7b56 100%); color: #0b0f15; border: none; padding: 14px; border-radius: 8px; font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; cursor: pointer; }
+    .sheet-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); backdrop-filter: blur(6px); z-index: 1000; align-items: flex-end; justify-content: center; }
+    .sheet-modal { background: #141a23; border: 1px solid var(--border-subtle); border-radius: 20px 20px 0 0; width: 100%; max-width: 520px; padding: 20px 18px 30px; max-height: 85vh; overflow-y: auto; }
+    .sheet-modal h3 { font-family: 'Cormorant Garamond',serif; font-size: 1.4rem; color: #fff; margin-bottom: 4px; }
+    .input-field { margin-bottom: 12px; }
+    .input-field label { display: block; font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--gold); margin-bottom: 4px; font-weight: 600; }
+    .input-field input { width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.15); padding: 11px 12px; border-radius: 8px; color: #fff; font-size: .88rem; outline: none; color-scheme: dark; }
+    .btn-done-dates { width: 100%; background: var(--gold); color: #0b0f15; border: none; padding: 13px; border-radius: 8px; font-weight: 700; font-size: .88rem; text-transform: uppercase; margin-top: 14px; cursor: pointer; }
+  </style>
+</head>
+<body>
+<header class="top-header">
+  <div class="brand-group"><h1>The Wildflower</h1><span>10 Heritage Mountain Suites</span></div>
+  <button class="btn-admin" onclick="openAdminPanel()">Hotel Admin</button>
+</header>
+
+<main class="main-wrapper">
+  <div class="date-filter-bar">
+    <div class="date-display-info"><h4 id="staySummaryDisplay">1 Night Stay</h4><p id="stayDatesDisplay">Loading dates...</p></div>
+    <button class="btn-change-date" onclick="openDateModal()">Change Dates</button>
+  </div>
+  <div id="roomsDirectory"></div>
+</main>
+
+<aside class="floating-bar">
+  <div class="bar-inner">
+    <div class="total-meta"><h5 id="selectedRoomLabel">Select a Room</h5><div class="total-val">₹<span id="grandTotal">0</span></div></div>
+    <button class="btn-reserve-final" onclick="openBookingDrawer()">Request Stay Code</button>
+  </div>
+</aside>
+
+<div class="sheet-backdrop" id="dateSheet">
+  <div class="sheet-modal">
+    <h3>Select Check-In & Check-Out</h3>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:16px;">Tariff and room availability dynamically updates upon confirmation.</p>
+    <div class="input-field"><label>Check-In Date</label><input type="date" id="modalCheckIn"></div>
+    <div class="input-field"><label>Check-Out Date</label><input type="date" id="modalCheckOut"></div>
+    <div class="input-field"><label>Guest Count</label><input type="number" id="modalGuests" value="2" min="1" max="6"></div>
+    <button class="btn-done-dates" onclick="applyDatesAndCalculate()">Done & Update Rates</button>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="bookingSheet">
+  <div class="sheet-modal">
+    <h3>Direct Stay Request</h3>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:14px;">Instant booking request is dispatched to hotel desk database.</p>
+    <form onsubmit="executeGuestBooking(event)">
+      <div class="input-field"><label>Full Guest Name</label><input type="text" id="custName" placeholder="Manoj Sharma" required></div>
+      <div class="input-field"><label>WhatsApp / Mobile</label><input type="tel" id="custPhone" placeholder="+91 98160 00000" required></div>
+      <div class="input-field"><label>Email Address</label><input type="email" id="custEmail" placeholder="guest@example.com" required></div>
+      <button type="submit" class="btn-done-dates">Send Booking Request</button>
+      <button type="button" style="width:100%;background:transparent;border:none;color:var(--text-muted);padding:8px;margin-top:6px;" onclick="closeBookingSheet()">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="adminSheet">
+  <div class="sheet-modal">
+    <h3 style="color:var(--gold);">Owner Realtime Admin Desk</h3>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:16px;">Manage 10 rooms, upload 5 gallery photos per room & review bookings.</p>
+    <div style="background:rgba(255,255,255,.04);padding:12px;border-radius:8px;margin-bottom:14px;">
+      <label style="font-size:.72rem;color:var(--gold);display:block;margin-bottom:6px;">Select Room to Update</label>
+      <select id="adminRoomSelect" style="width:100%;padding:8px;background:#0b0f15;color:#fff;border:1px solid var(--border-subtle);border-radius:6px;margin-bottom:10px;" onchange="loadRoomForAdmin()"></select>
+      <label style="font-size:.72rem;color:var(--gold);display:block;margin-bottom:4px;">Update Base Rate (₹)</label>
+      <input type="number" id="adminRoomRate" style="width:100%;padding:8px;background:#0b0f15;color:#fff;border:1px solid var(--border-subtle);border-radius:6px;margin-bottom:10px;">
+      <label style="font-size:.72rem;color:var(--gold);display:block;margin-bottom:4px;">Upload 5 Room Photos from Mobile Gallery</label>
+      <input type="file" id="adminPhotoInput" accept="image/*" multiple style="font-size:.75rem;color:var(--text-muted);" onchange="handleAdminPhotoBatch(event)">
+    </div>
+    <div style="background:rgba(255,255,255,.04);padding:12px;border-radius:8px;margin-bottom:14px;">
+      <h4 style="font-size:.8rem;color:var(--gold);margin-bottom:8px;">Pending Bookings</h4>
+      <div id="adminBookingFeed" style="font-size:.72rem;color:var(--text-muted);">No active bookings.</div>
+    </div>
+    <button class="btn-done-dates" onclick="closeAdminPanel()">Close Admin</button>
+  </div>
+</div>
+
+<script>
+let roomsDatabase = [
+{ id:1,title:"Presidential Cedar Suite",rate:5500,view:"Panoramic Valley View",photos:["https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800","https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800","https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800","https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800","https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800"]},
+{ id:2,title:"Himalayan Ridge Deluxe",rate:4200,view:"Snow Peak Balcony",photos:["https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800","https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800","https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800","https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800"]},
+{ id:3,title:"Mashobra Pine Attic Suite",rate:4800,view:"Pine Forest Canopy",photos:["https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800","https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800","https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800","https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800"]},
+{ id:4,title:"Valley Edge Cottage",rate:6200,view:"Private Sunset Garden",photos:["https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800","https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800","https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800","https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800"]},
+{ id:5,title:"Chharabra Heritage Room",rate:3800,view:"British Colonial Courtyard",photos:["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800","https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800","https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800","https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800"]},
+{ id:6,title:"Attic Duplex Family Villa",rate:7500,view:"360 Himalayan Valley",photos:["https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800","https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800","https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800","https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800"]},
+{ id:7,title:"Cedar Haven Studio",rate:3400,view:"Quiet Apple Orchard",photos:["https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800","https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800","https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800","https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800"]},
+{ id:8,title:"Imperial Honeymoon Suite",rate:6800,view:"Fireplace & Private Jacuzzi",photos:["https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800","https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800","https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800","https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800","https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800"]},
+{ id:9,title:"Mountain Whisper Room",rate:3900,view:"Sunrise Valley Horizon",photos:["https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800","https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800","https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800","https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800"]},
+{ id:10,title:"Royal Penthouse Suite",rate:8900,view:"Highest Elevation Glass Balcony",photos:["https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800","https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800","https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800","https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800"]}
+];
+
+let selectedRoomId=1,checkInDate="",checkOutDate="",nightsCount=1,guestsCount=2,pendingBookings=[];
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date(),tomorrow=new Date();tomorrow.setDate(today.getDate()+1);
+  checkInDate=today.toISOString().split("T")[0];checkOutDate=tomorrow.toISOString().split("T")[0];
+  document.getElementById('modalCheckIn').value=checkInDate;document.getElementById('modalCheckOut').value=checkOutDate;
+  updateStayDisplays();renderAllRooms();calculateInvoice();populateAdminRoomSelector();
+});
+
+function openDateModal(){document.getElementById('dateSheet').style.display='flex'}
+function applyDatesAndCalculate(){
+  const inVal=document.getElementById('modalCheckIn').value,outVal=document.getElementById('modalCheckOut').value,gVal=parseInt(document.getElementById('modalGuests').value);
+  if(!inVal||!outVal){alert("Please choose both Check-In and Check-Out dates.");return}
+  const d1=new Date(inVal),d2=new Date(outVal),diff=Math.ceil((d2-d1)/(1000*60*60*24));
+  if(diff<=0){alert("Check-Out date must be after Check-In date.");return}
+  checkInDate=inVal;checkOutDate=outVal;nightsCount=diff;guestsCount=isNaN(gVal)||gVal<1?2:gVal;
+  updateStayDisplays();calculateInvoice();document.getElementById('dateSheet').style.display='none';
+}
+function updateStayDisplays(){document.getElementById('staySummaryDisplay').innerText=`${nightsCount} Night${nightsCount>1?'s':''} Stay (${guestsCount} Guests)`;document.getElementById('stayDatesDisplay').innerText=`${checkInDate} to ${checkOutDate}`}
+function renderAllRooms(){
+  const container=document.getElementById('roomsDirectory');container.innerHTML='';
+  roomsDatabase.forEach(room=>{
+    const isSelected=room.id===selectedRoomId,card=document.createElement('div');card.className=`room-card ${isSelected?'selected':''}`;card.id=`room-card-${room.id}`;
+    card.innerHTML=`<div class="room-media"><span class="room-pill-badge">${room.view}</span><img id="room-img-${room.id}" src="${room.photos[0]}" alt="${room.title}"><span class="photo-index-tag" id="tag-${room.id}">Photo 1 of 5</span></div><div class="thumb-scroll" id="thumbs-${room.id}">${room.photos.map((p,idx)=>`<img src="${p}" class="${idx===0?'active':''}" onclick="switchRoomPhoto(${room.id},${idx})">`).join('')}</div><div class="room-content"><div class="room-title-row"><h3>${room.title}</h3><div class="room-rate-tag">₹${room.rate.toLocaleString('en-IN')} <small>/ night</small></div></div><p class="room-desc">Handcrafted cedar wood architecture, heated flooring, 5G mesh connectivity & mountain balcony.</p><button class="btn-select-room" onclick="selectRoom(${room.id})">${isSelected?'✓ Selected Residence':'Select This Suite'}</button></div>`;
+    container.appendChild(card);
+  });
+}
+function switchRoomPhoto(roomId,photoIdx){
+  const room=roomsDatabase.find(r=>r.id===roomId);if(!room)return;
+  document.getElementById(`room-img-${roomId}`).src=room.photos[photoIdx];document.getElementById(`tag-${roomId}`).innerText=`Photo ${photoIdx+1} of 5`;
+  document.querySelectorAll(`#thumbs-${roomId} img`).forEach((t,i)=>t.classList.toggle('active',i===photoIdx));
+}
+function selectRoom(roomId){
+  selectedRoomId=roomId;document.querySelectorAll('.room-card').forEach(el=>el.classList.remove('selected'));document.getElementById(`room-card-${roomId}`).classList.add('selected');
+  document.querySelectorAll('.btn-select-room').forEach(btn=>btn.innerText='Select This Suite');document.querySelector(`#room-card-${roomId} .btn-select-room`).innerText='✓ Selected Residence';calculateInvoice();
+}
+function calculateInvoice(){
+  const room=roomsDatabase.find(r=>r.id===selectedRoomId);if(!room)return;
+  const extraGuests=Math.max(0,guestsCount-2),extraGuestCharge=extraGuests*800*nightsCount,totalAmount=(room.rate*nightsCount)+extraGuestCharge;
+  document.getElementById('selectedRoomLabel').innerText=`${room.title} (${nightsCount}N)`;document.getElementById('grandTotal').innerText=totalAmount.toLocaleString('en-IN');
+}
+function openBookingDrawer(){document.getElementById('bookingSheet').style.display='flex'}
+function closeBookingSheet(){document.getElementById('bookingSheet').style.display='none'}
+function executeGuestBooking(e){
+  e.preventDefault();const room=roomsDatabase.find(r=>r.id===selectedRoomId);
+  const bookingRecord={bookingId:"SHM-"+Math.floor(100000+Math.random()*900000),roomName:room.title,guestName:document.getElementById('custName').value,phone:document.getElementById('custPhone').value,email:document.getElementById('custEmail').value,checkIn:checkInDate,checkOut:checkOutDate,total:document.getElementById('grandTotal').innerText,dateCreated:new Date().toLocaleDateString()};
+  pendingBookings.push(bookingRecord);updateAdminBookingFeed();alert(`Booking Request Submitted!\nRoom: ${bookingRecord.roomName}\nConfirmation ID: ${bookingRecord.bookingId}\nOwner notified.`);closeBookingSheet();
+}
+function openAdminPanel(){document.getElementById('adminSheet').style.display='flex'}
+function closeAdminPanel(){document.getElementById('adminSheet').style.display='none'}
+function populateAdminRoomSelector(){const select=document.getElementById('adminRoomSelect');select.innerHTML=roomsDatabase.map(r=>`<option value="${r.id}">${r.title} (₹${r.rate})</option>`).join('');loadRoomForAdmin()}
+function loadRoomForAdmin(){const rId=parseInt(document.getElementById('adminRoomSelect').value),room=roomsDatabase.find(r=>r.id===rId);if(room)document.getElementById('adminRoomRate').value=room.rate}
+function handleAdminPhotoBatch(e){
+  const rId=parseInt(document.getElementById('adminRoomSelect').value),files=Array.from(e.target.files).slice(0,5),room=roomsDatabase.find(r=>r.id===rId);if(!room||files.length===0)return;
+  let loaded=0,newPhotos=[];files.forEach((file,index)=>{const reader=new FileReader();reader.onload=(event)=>{newPhotos[index]=event.target.result;loaded++;if(loaded===files.length){room.photos=newPhotos;renderAllRooms();alert(`${files.length} photos updated for ${room.title} directly from gallery!`)}};reader.readAsDataURL(file)});
+}
+function updateAdminBookingFeed(){
+  const feed=document.getElementById('adminBookingFeed');if(pendingBookings.length===0){feed.innerHTML="No active bookings.";return}
+  feed.innerHTML=pendingBookings.map((b,idx)=>`<div style="background:rgba(255,255,255,.08);padding:8px;border-radius:6px;margin-bottom:6px;"><strong>${b.guestName}</strong> - ${b.roomName}<br><span>Dates: ${b.checkIn} to ${b.checkOut} | Total: ₹${b.total}</span><br><button onclick="dispatchConfirmationCode(${idx})" style="background:#22c55e;color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:.68rem;margin-top:4px;cursor:pointer;">Issue Confirmation Code</button></div>`).join('');
+}
+function dispatchConfirmationCode(idx){const b=pendingBookings[idx],code="CONF-"+Math.floor(100000+Math.random()*900000);alert(`Code ${code} dispatched to ${b.email} / ${b.phone}!`);pendingBookings.splice(idx,1);updateAdminBookingFeed()}
+</script>
+</body>
+</html>
