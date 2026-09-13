@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHIMLASTAYS.IN | Luxury Stays & Taxi Portal</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    (function() {
+      emailjs.init("UOR3M5ih3vQKh-_hl");
+    })();
+  </script>
+</head>
+<body class="bg-stone-900 text-stone-100 font-sans min-h-screen">
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-stone-950/90 backdrop-blur-md border-b border-stone-800 px-4 lg:px-8 py-3.5 flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <i class="fa-solid fa-mountain-sun text-amber-500 text-2xl"></i>
+      <span class="text-xl font-bold tracking-wider text-amber-400">SHIMLASTAYS.IN</span>
+    </div>
+    
+    <div class="flex items-center space-x-3">
+      <button onclick="openModal('authModal')" class="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-4 py-1.5 rounded-lg text-sm transition">
+        <i class="fa-regular fa-user mr-1.5"></i>Login / Sign Up
+      </button>
+      <button onclick="openModal('adminModal')" class="border border-stone-700 hover:border-amber-500/50 text-stone-300 hover:text-amber-400 px-3 py-1.5 rounded-lg text-sm transition">
+        <i class="fa-solid fa-lock mr-1"></i>Admin
+      </button>
+    </div>
+  </header>
+
+  <!-- Dynamic Wallpaper Hero Section -->
+  <section id="heroSection" class="relative h-[480px] flex flex-col items-center justify-center text-center px-4 bg-cover bg-center transition-all duration-700" style="background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb');">
+    <h1 class="text-3xl sm:text-5xl font-extrabold text-stone-100 mb-3 drop-shadow-md">Himachal's Premier Travel Portal</h1>
+    <p class="text-stone-300 text-sm sm:text-base max-w-xl drop-shadow mb-6">Handpicked mountain properties, tailored tour packages & verified local cabs across Shimla.</p>
+    
+    <!-- Tab Selector -->
+    <div class="inline-flex bg-stone-950/80 p-1.5 rounded-xl border border-stone-800 shadow-2xl space-x-2">
+      <button onclick="switchTab('hotels')" id="tabHotels" class="px-5 py-2.5 rounded-lg text-sm font-semibold bg-amber-500 text-stone-950 transition">
+        <i class="fa-solid fa-hotel mr-2"></i>Hotels & Suites
+      </button>
+      <button onclick="switchTab('taxi')" id="tabTaxi" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-stone-400 hover:text-stone-100 transition">
+        <i class="fa-solid fa-taxi mr-2"></i>Taxi Booking
+      </button>
+      <button onclick="switchTab('tours')" id="tabTours" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-stone-400 hover:text-stone-100 transition">
+        <i class="fa-solid fa-route mr-2"></i>Tour Packages
+      </button>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- HOTELS SECTION -->
+    <section id="hotelsSection">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-stone-800 mb-8">
+        <div>
+          <h2 class="text-2xl font-bold text-stone-100">Featured Properties in Shimla</h2>
+          <p class="text-stone-400 text-sm">Verified mountain views, luxury amenities & confirmed bookings</p>
+        </div>
+        <span class="text-xs text-stone-400 mt-2 sm:mt-0"><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i>12 Verified Stays</span>
+      </div>
+
+      <div id="hotelGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- TAXI BOOKING SECTION -->
+    <section id="taxiSection" class="hidden">
+      <div class="max-w-3xl mx-auto bg-stone-950 border border-stone-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+        <div class="text-center mb-6">
+          <span class="bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs px-3 py-1 rounded-full font-semibold">Point-to-Point & Sightseeing</span>
+          <h2 class="text-2xl font-bold text-stone-100 mt-2">Book a Taxi in Shimla</h2>
+          <p class="text-stone-400 text-sm">Reliable hill drivers, transparent fares, and instant dispatch.</p>
+        </div>
+
+        <form id="taxiForm" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Pickup Location / Address</label>
+              <input type="text" id="taxiPickup" required placeholder="e.g. Old Bus Stand, Shimla" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400" />
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Drop Location / Sightseeing</label>
+              <input type="text" id="taxiDrop" required placeholder="e.g. Kufri / Mall Road / Chandigarh Airport" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Travel Date</label>
+              <input type="date" id="taxiDate" required class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400" />
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Vehicle Class</label>
+              <select id="taxiCar" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400">
+                <option value="Sedan (Dzire/Etios)">Sedan (Dzire/Etios) - 4 Pax</option>
+                <option value="SUV (Innova/Ertiga)">SUV (Innova/Ertiga) - 6 Pax</option>
+                <option value="Tempo Traveller">Tempo Traveller - 12 Pax</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Passengers</label>
+              <input type="number" id="taxiPax" min="1" max="15" value="2" required class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Your Name</label>
+              <input type="text" id="taxiName" required placeholder="Full Name" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400" />
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Phone / WhatsApp</label>
+              <input type="tel" id="taxiPhone" required placeholder="+91 98000 00000" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400" />
+            </div>
+          </div>
+
+          <!-- Embedded Map Visual Guide -->
+          <div class="rounded-lg overflow-hidden border border-stone-800">
+            <iframe title="Shimla Region Map" src="https://maps.google.com/maps?q=Shimla,Himachal+Pradesh&t=&z=12&ie=UTF8&iwloc=&output=embed" width="100%" height="180" style="border:0;" loading="lazy"></iframe>
+          </div>
+
+          <div id="taxiStatusMsg" class="hidden text-sm text-center font-medium"></div>
+
+          <button type="submit" id="taxiSubmitBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold py-3 rounded-lg text-sm transition">
+            Dispatch Taxi Request
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- TOURS & PACKAGES SECTION -->
+    <section id="toursSection" class="hidden">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <h2 class="text-2xl font-bold text-stone-100">Curated Himachal Tour Packages</h2>
+        <p class="text-stone-400 text-sm">Inclusive of luxury stays, local guide, and cab transfers</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Package 1 -->
+        <div class="bg-stone-950 border border-stone-800 rounded-2xl overflow-hidden shadow-lg flex flex-col">
+          <img src="https://images.unsplash.com/photo-1579619564365-0355a6d5fa57" class="h-48 w-full object-cover" alt="Shimla Local Tour" />
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-bold text-amber-400 uppercase">2 Nights / 3 Days</span>
+              <h3 class="text-lg font-bold text-stone-100 mt-1">Shimla Heritage & Kufri Gateway</h3>
+              <p class="text-stone-400 text-xs mt-2">Mall Road, Jakhoo Temple, Kufri snow viewpoint, and heritage walk.</p>
+              <div class="text-amber-300 font-extrabold text-xl mt-4">₹12,499 <span class="text-xs text-stone-400 font-normal">/ couple</span></div>
+            </div>
+            <button onclick="bookDirectTour('Shimla Heritage & Kufri Gateway', '₹12,499')" class="w-full mt-5 bg-stone-800 hover:bg-amber-500 hover:text-stone-950 border border-stone-700 text-stone-200 font-semibold py-2.5 rounded-lg text-sm transition">Inquire Package</button>
+          </div>
+        </div>
+        <!-- Package 2 -->
+        <div class="bg-stone-950 border border-stone-800 rounded-2xl overflow-hidden shadow-lg flex flex-col">
+          <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa" class="h-48 w-full object-cover" alt="Shimla Manali Circuit" />
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-bold text-amber-400 uppercase">4 Nights / 5 Days</span>
+              <h3 class="text-lg font-bold text-stone-100 mt-1">Shimla - Kullu - Manali Odyssey</h3>
+              <p class="text-stone-400 text-xs mt-2">Atal Tunnel, Solang Valley adventure, river rafting in Kullu & stay.</p>
+              <div class="text-amber-300 font-extrabold text-xl mt-4">₹24,999 <span class="text-xs text-stone-400 font-normal">/ couple</span></div>
+            </div>
+            <button onclick="bookDirectTour('Shimla - Kullu - Manali Odyssey', '₹24,999')" class="w-full mt-5 bg-stone-800 hover:bg-amber-500 hover:text-stone-950 border border-stone-700 text-stone-200 font-semibold py-2.5 rounded-lg text-sm transition">Inquire Package</button>
+          </div>
+        </div>
+        <!-- Package 3 -->
+        <div class="bg-stone-950 border border-stone-800 rounded-2xl overflow-hidden shadow-lg flex flex-col">
+          <img src="https://images.unsplash.com/photo-1605649487212-47bdab064df8" class="h-48 w-full object-cover" alt="Spiti Valley" />
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <span class="text-xs font-bold text-amber-400 uppercase">6 Nights / 7 Days</span>
+              <h3 class="text-lg font-bold text-stone-100 mt-1">Kinnaur & Spiti Valley Expedition</h3>
+              <p class="text-stone-400 text-xs mt-2">Kalpa, Nako Lake, Kaza, Key Monastery with 4x4 mountain SUV.</p>
+              <div class="text-amber-300 font-extrabold text-xl mt-4">₹38,500 <span class="text-xs text-stone-400 font-normal">/ couple</span></div>
+            </div>
+            <button onclick="bookDirectTour('Kinnaur & Spiti Valley Expedition', '₹38,500')" class="w-full mt-5 bg-stone-800 hover:bg-amber-500 hover:text-stone-950 border border-stone-700 text-stone-200 font-semibold py-2.5 rounded-lg text-sm transition">Inquire Package</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOOKING MODAL (HOTEL & ROOM) -->
+  <div id="bookingModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-stone-950 border border-stone-800 w-full max-w-lg rounded-2xl p-6 relative shadow-2xl">
+      <button onclick="closeModal('bookingModal')" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100 text-lg"><i class="fa-solid fa-xmark"></i></button>
+      
+      <div class="mb-4 border-b border-stone-800 pb-3">
+        <span class="text-xs font-semibold text-amber-400 uppercase">Reservation Request</span>
+        <h3 id="modalHotelTitle" class="text-xl font-bold text-stone-100 mt-0.5">Hotel Booking</h3>
+        <p id="modalRoomPrice" class="text-xs text-stone-400"></p>
+      </div>
+
+      <form id="hotelBookingForm" class="space-y-3.5">
+        <input type="hidden" id="bookingHotelName" />
+        <input type="hidden" id="bookingPrice" />
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider text-stone-400 mb-1">Check-in</label>
+            <input type="date" id="bookCheckIn" required class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400" />
+          </div>
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider text-stone-400 mb-1">Check-out</label>
+            <input type="date" id="bookCheckOut" required class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider text-stone-400 mb-1">Room Category</label>
+            <select id="bookRoomType" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400">
+              <option value="Presidential Suite">Presidential Suite</option>
+              <option value="Himalayan Valley View">Himalayan Valley View</option>
+              <option value="Cedar Deluxe Room">Cedar Deluxe Room</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider text-stone-400 mb-1">Total Guests</label>
+            <input type="number" id="bookPax" min="1" max="10" value="2" required class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] uppercase tracking-wider text-stone-400 mb-1">Full Name</label>
+          <input type="text" id="bookGuestName" required placeholder="Guest Name" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider text-stone-400 mb-1">Email Address</label>
+            <input type="email" id="bookGuestEmail" required placeholder="guest@email.com" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400" />
+          </div>
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider text-stone-400 mb-1">Phone / WhatsApp</label>
+            <input type="tel" id="bookGuestPhone" required placeholder="+91 98000 00000" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400" />
+          </div>
+        </div>
+
+        <div id="bookingStatusMsg" class="hidden text-xs text-center font-medium"></div>
+
+        <button type="submit" id="bookSubmitBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold py-2.5 rounded-lg text-sm transition">
+          Confirm Reservation Request
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATION MODAL (LOGIN/SIGNUP) -->
+  <div id="authModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-stone-950 border border-stone-800 w-full max-w-sm rounded-2xl p-6 relative">
+      <button onclick="closeModal('authModal')" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="text-lg font-bold text-stone-100 mb-4 text-center">User Registration & Login</h3>
+      <form onsubmit="handleAuth(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs text-stone-400 mb-1">Email or Mobile Number</label>
+          <input type="text" id="authInput" required placeholder="email@domain.com / 98050..." class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400" />
+        </div>
+        <div>
+          <label class="block text-xs text-stone-400 mb-1">Password</label>
+          <input type="password" required placeholder="••••••••" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400" />
+        </div>
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold py-2 rounded-lg text-xs transition mt-2">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN WALLPAPER MODAL -->
+  <div id="adminModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-stone-950 border border-stone-800 w-full max-w-md rounded-2xl p-6 relative">
+      <button onclick="closeModal('adminModal')" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="text-lg font-bold text-stone-100 mb-1">Admin Wallpaper Manager</h3>
+      <p class="text-xs text-stone-400 mb-4">Change the homepage hero background image instantly.</p>
+      
+      <form onsubmit="handleWallpaperChange(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs text-stone-400 mb-1">Admin Passcode</label>
+          <input type="password" id="adminPass" required placeholder="Enter admin code (1234)" class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400" />
+        </div>
+        <div>
+          <label class="block text-xs text-stone-400 mb-1">New Wallpaper Image URL</label>
+          <input type="url" id="wallpaperUrl" required placeholder="https://images.unsplash.com/..." class="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100 focus:outline-none focus:border-amber-400" />
+        </div>
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold py-2 rounded-lg text-xs transition">Update Wallpaper</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // 12 Shimla Hotels Dataset (With multiple photo galleries, pricing, and map pointers)
+    const hotelCatalog = [
+      { id: 1, name: "The Wildflower Estate", location: "Charabra, Shimla", price: "₹6,500", rating: "4.9", mapQuery: "Wildflower+Hall+Charabra+Shimla", photos: ["https://images.unsplash.com/photo-1566073771259-6a8506099945", "https://images.unsplash.com/photo-1582719508461-905c673771fd", "https://images.unsplash.com/photo-1590490360182-c33d57733427"] },
+  
